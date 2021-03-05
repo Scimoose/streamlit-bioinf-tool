@@ -3,6 +3,22 @@ from textwrap import wrap
 import streamlit as st
 import re
 
+
+def sequence_bar():
+    text_or_file = ["Enter sequence:", "Upload from .txt file"]
+    choice = st.selectbox("Select how you want to enter the sequence",
+                          text_or_file)
+
+    if choice == "Upload from .txt file":
+        uploaded_file = st.file_uploader("Upload Sequence", type="txt")
+        seq = uploaded_file.read()
+        seq = seq.decode('UTF-8')
+        return seq
+    elif choice == "Enter sequence:":
+        user_input = st.text_input("Type/paste the sequence", "ATGC")
+        return user_input
+
+
 # counts bases in a string and returns count + sum
 def count_bases(seq):
     A = seq.count("A")
@@ -45,14 +61,13 @@ def translate_to_prot(seq):
 
     return prot_seq
 
+
 # mode function - basic DNA analysis
 def basic_DNA():
     st.subheader("Analyze your DNA sequence:")
 
     try:
-        uploaded_file = st.file_uploader("Upload Sequence", type="txt")
-        seq = uploaded_file.read()
-        seq = seq.decode('UTF-8')
+        seq = sequence_bar()  
         st.text("Your sequence:")
         st.text(seq)
 
@@ -72,9 +87,9 @@ def basic_DNA():
 
         if rna_switch is True:
             st.text(seq.replace("T", "U"))
-            translate_to_prot = st.checkbox("1.1 Translate strand to protein?")
+            translate_prot = st.checkbox("1.1 Translate strand to protein?")
 
-            if translate_to_prot is True:
+            if translate_prot is True:
 
                 prot_seq = translate_to_prot(seq)
 
@@ -131,9 +146,7 @@ def count_point_mut():
 def find_motifs():
     try:
         st.subheader("Original sequence:")
-        check_motif_seq = st.file_uploader("Upload sequence that you want to find motifs in:", type="txt")
-        check_motif_seq = check_motif_seq.read()
-        check_motif_seq = check_motif_seq.decode('UTF-8')
+        check_motif_seq = sequence_bar()
         st.text(check_motif_seq)
 
         motif = st.text_input("Write motif sequence below...")
